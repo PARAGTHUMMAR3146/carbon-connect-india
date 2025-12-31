@@ -2,87 +2,122 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* CarbonMax Design System - India's Carbon Credit Marketplace */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Brand Colors */
+    --background: 150 20% 98%;
+    --foreground: 160 30% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 160 30% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 160 30% 10%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Emerald Green - Primary for Sellers/Sustainability */
+    --primary: 158 64% 35%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Deep Navy - Secondary for Buyers/Industry */
+    --secondary: 220 60% 25%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Gold/Amber - Financial/Money accents */
+    --accent: 38 92% 50%;
+    --accent-foreground: 38 92% 10%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted: 150 10% 94%;
+    --muted-foreground: 160 10% 45%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 158 64% 35%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
+
+    /* Extended Palette */
+    --emerald-50: 152 81% 96%;
+    --emerald-100: 149 80% 90%;
+    --emerald-500: 158 64% 40%;
+    --emerald-600: 158 64% 35%;
+    --emerald-700: 158 64% 28%;
+    --emerald-800: 158 64% 20%;
+
+    --navy-50: 220 60% 96%;
+    --navy-100: 220 50% 90%;
+    --navy-500: 220 60% 35%;
+    --navy-600: 220 60% 28%;
+    --navy-700: 220 60% 22%;
+    --navy-800: 220 60% 15%;
+
+    --gold-50: 38 100% 96%;
+    --gold-100: 38 92% 85%;
+    --gold-500: 38 92% 50%;
+    --gold-600: 38 92% 42%;
+
+    /* Gradients */
+    --gradient-seller: linear-gradient(135deg, hsl(158 64% 35%) 0%, hsl(168 60% 32%) 100%);
+    --gradient-buyer: linear-gradient(135deg, hsl(220 60% 28%) 0%, hsl(240 50% 35%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(28 90% 45%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(150 20% 98%) 100%);
+    --gradient-hero-seller: linear-gradient(135deg, hsl(158 64% 32%) 0%, hsl(175 55% 28%) 50%, hsl(158 64% 25%) 100%);
+    --gradient-hero-buyer: linear-gradient(135deg, hsl(220 65% 25%) 0%, hsl(245 55% 35%) 50%, hsl(220 60% 20%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-emerald: 0 10px 40px -10px hsl(158 64% 35% / 0.4);
+    --shadow-navy: 0 10px 40px -10px hsl(220 60% 25% / 0.4);
+    --shadow-gold: 0 10px 40px -10px hsl(38 92% 50% / 0.4);
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 220 25% 8%;
+    --foreground: 150 20% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 25% 12%;
+    --card-foreground: 150 20% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 25% 12%;
+    --popover-foreground: 150 20% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 158 60% 45%;
+    --primary-foreground: 220 25% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 40% 50%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 38 92% 55%;
+    --accent-foreground: 38 92% 10%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --muted: 220 20% 18%;
+    --muted-foreground: 150 10% 60%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 220 20% 18%;
+    --input: 220 20% 18%;
+    --ring: 158 60% 45%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -99,7 +134,233 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  /* Card Variants */
+  .card-elevated {
+    @apply bg-card rounded-2xl border border-border shadow-md;
+    background: var(--gradient-card);
+  }
+
+  .card-glass {
+    @apply backdrop-blur-xl rounded-2xl border border-white/20;
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  /* Hero Cards */
+  .hero-seller {
+    background: var(--gradient-hero-seller);
+    box-shadow: var(--shadow-emerald);
+  }
+
+  .hero-buyer {
+    background: var(--gradient-hero-buyer);
+    box-shadow: var(--shadow-navy);
+  }
+
+  /* Button Variants */
+  .btn-seller {
+    @apply bg-primary text-primary-foreground font-semibold px-6 py-3 rounded-xl transition-all duration-200;
+    box-shadow: var(--shadow-emerald);
+  }
+
+  .btn-seller:hover {
+    @apply scale-105;
+    filter: brightness(1.1);
+  }
+
+  .btn-buyer {
+    @apply font-semibold px-6 py-3 rounded-xl transition-all duration-200;
+    background: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    box-shadow: var(--shadow-navy);
+  }
+
+  .btn-buyer:hover {
+    @apply scale-105;
+    filter: brightness(1.1);
+  }
+
+  .btn-gold {
+    background: var(--gradient-gold);
+    @apply text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200;
+    box-shadow: var(--shadow-gold);
+  }
+
+  .btn-gold:hover {
+    @apply scale-105;
+    filter: brightness(1.1);
+  }
+
+  /* Price Ticker */
+  .price-ticker {
+    @apply relative overflow-hidden;
+    background: linear-gradient(90deg, hsl(var(--emerald-800)) 0%, hsl(var(--navy-800)) 100%);
+  }
+
+  .price-ticker-content {
+    animation: ticker 30s linear infinite;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Role Selection Cards */
+  .role-card {
+    @apply bg-card rounded-3xl p-8 border-2 border-border transition-all duration-300 cursor-pointer;
+  }
+
+  .role-card:hover {
+    @apply shadow-xl scale-[1.02];
+  }
+
+  .role-card-seller:hover {
+    border-color: hsl(var(--primary));
+    box-shadow: var(--shadow-emerald);
+  }
+
+  .role-card-buyer:hover {
+    border-color: hsl(var(--secondary));
+    box-shadow: var(--shadow-navy);
+  }
+
+  /* Stat Cards */
+  .stat-card {
+    @apply bg-card rounded-2xl p-6 border border-border transition-all duration-200;
+  }
+
+  .stat-card:hover {
+    @apply shadow-lg -translate-y-1;
+  }
+
+  /* Input Styling */
+  .input-modern {
+    @apply w-full bg-muted border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all;
+  }
+
+  /* Navigation */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium;
+  }
+
+  .nav-item-active-seller {
+    @apply bg-primary text-primary-foreground;
+    box-shadow: var(--shadow-emerald);
+  }
+
+  .nav-item-active-buyer {
+    background: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    box-shadow: var(--shadow-navy);
+  }
+
+  /* Listings Grid */
+  .listing-card {
+    @apply bg-card rounded-2xl border border-border p-6 transition-all duration-200;
+  }
+
+  .listing-card:hover {
+    @apply shadow-xl border-primary/30;
+  }
+
+  /* Credit Type Badge */
+  .credit-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold;
+  }
+
+  .credit-badge-verra {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .credit-badge-gold-standard {
+    @apply bg-gold-100 text-gold-700;
+  }
+
+  .credit-badge-cdm {
+    @apply bg-blue-100 text-blue-700;
+  }
+
+  /* Pulse animation for live indicator */
+  .pulse-live {
+    animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Smooth page transitions */
+  .page-enter {
+    animation: pageEnter 0.4s ease-out;
+  }
+
+  @keyframes pageEnter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Notification animation */
+  .notification-enter {
+    animation: notificationSlide 0.3s ease-out;
+  }
+
+  @keyframes notificationSlide {
+    from {
+      opacity: 0;
+      transform: translateX(100px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Map marker pulse */
+  .map-marker-pulse {
+    animation: markerPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes markerPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-seller {
+    background: var(--gradient-seller);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-pattern-dots {
+    background-image: radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
 }
