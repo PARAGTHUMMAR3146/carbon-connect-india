@@ -1,11 +1,11 @@
 import React from 'react';
-import { Leaf, Factory, Languages, ArrowRight, Shield, Zap, Globe } from 'lucide-react';
+import { Leaf, Factory, Languages, ArrowRight, Shield, Zap, Globe, Settings } from 'lucide-react';
 import { Language, TRANSLATIONS } from '@/lib/translations';
 
 interface RoleSelectionProps {
   lang: Language;
   onToggleLang: () => void;
-  onSelectRole: (role: 'seller' | 'buyer') => void;
+  onSelectRole: (role: 'seller' | 'buyer' | 'admin') => void;
 }
 
 const RoleSelection: React.FC<RoleSelectionProps> = ({ lang, onToggleLang, onSelectRole }) => {
@@ -51,7 +51,7 @@ const RoleSelection: React.FC<RoleSelectionProps> = ({ lang, onToggleLang, onSel
           </h2>
 
           {/* Role Cards */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {/* Farmer/Seller Card */}
             <button
               onClick={() => onSelectRole('seller')}
@@ -94,6 +94,29 @@ const RoleSelection: React.FC<RoleSelectionProps> = ({ lang, onToggleLang, onSel
                 </span>
                 <span className="px-3 py-1 rounded-full bg-navy-100 text-secondary text-xs font-medium">
                   {lang === 'en' ? 'Offset Carbon' : 'कार्बन ऑफसेट'}
+                </span>
+              </div>
+            </button>
+
+            {/* Admin Card */}
+            <button
+              onClick={() => onSelectRole('admin')}
+              className="role-card group text-left hover:border-destructive hover:shadow-lg"
+            >
+              <div className="flex items-start justify-between mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-destructive/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Settings className="text-destructive" size={32} />
+                </div>
+                <ArrowRight className="text-muted-foreground group-hover:text-destructive group-hover:translate-x-1 transition-all" size={24} />
+              </div>
+              <h3 className="text-2xl font-bold text-foreground mb-2">{t('admin')}</h3>
+              <p className="text-muted-foreground mb-6">{t('adminDesc')}</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 rounded-full bg-destructive/10 text-destructive text-xs font-medium">
+                  {lang === 'en' ? 'Manage Users' : 'उपयोगकर्ता प्रबंधित'}
+                </span>
+                <span className="px-3 py-1 rounded-full bg-destructive/10 text-destructive text-xs font-medium">
+                  {lang === 'en' ? 'Verify Credits' : 'क्रेडिट सत्यापित'}
                 </span>
               </div>
             </button>

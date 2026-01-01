@@ -11,6 +11,8 @@ export const TRANSLATIONS = {
     farmerDesc: "Monetize your sustainable farming practices",
     buyer: "Industry / Buyer",
     buyerDesc: "Offset your carbon footprint responsibly",
+    admin: "Admin",
+    adminDesc: "Manage platform operations and compliance",
     
     // Registration
     registerTitle: "Create Account",
@@ -22,6 +24,7 @@ export const TRANSLATIONS = {
     district: "District",
     industryType: "Industry Type",
     submit: "Get Started",
+    adminCode: "Admin Access Code",
     
     // Navigation
     dashboard: "Dashboard",
@@ -33,6 +36,13 @@ export const TRANSLATIONS = {
     support: "Support",
     settings: "Settings",
     logout: "Log Out",
+    
+    // Admin Navigation
+    overview: "Overview",
+    userManagement: "User Management",
+    creditVerification: "Credit Verification",
+    complianceReports: "Compliance Reports",
+    platformSettings: "Platform Settings",
     
     // Dashboard
     searchPlaceholder: "Search credits, sellers...",
@@ -131,6 +141,41 @@ export const TRANSLATIONS = {
     downloadReport: "Download Report",
     generateReport: "Generate Report",
     
+    // Admin specific
+    totalUsers: "Total Users",
+    totalSellers: "Total Sellers",
+    totalBuyers: "Total Buyers",
+    pendingVerifications: "Pending Verifications",
+    totalVolume: "Total Volume",
+    platformRevenue: "Platform Revenue",
+    verifyCredits: "Verify Credits",
+    rejectCredits: "Reject",
+    approveCredits: "Approve",
+    suspendUser: "Suspend",
+    activateUser: "Activate",
+    viewDetails: "View Details",
+    userStatus: "Status",
+    active: "Active",
+    suspended: "Suspended",
+    verified: "Verified",
+    unverified: "Unverified",
+    complianceStatus: "Compliance Status",
+    generateComplianceReport: "Generate Compliance Report",
+    exportToCSV: "Export to CSV",
+    exportToPDF: "Export to PDF",
+    lastLogin: "Last Login",
+    joinedDate: "Joined Date",
+    creditsTraded: "Credits Traded",
+    verificationQueue: "Verification Queue",
+    farmDetails: "Farm Details",
+    documentVerification: "Document Verification",
+    carbonCalculation: "Carbon Calculation",
+    allTransactions: "All Transactions",
+    filterByStatus: "Filter by Status",
+    filterByDate: "Filter by Date",
+    searchUsers: "Search users...",
+    noDataFound: "No data found",
+    
     // States
     punjab: "Punjab",
     haryana: "Haryana",
@@ -163,6 +208,8 @@ export const TRANSLATIONS = {
     farmerDesc: "अपनी टिकाऊ खेती से कमाई करें",
     buyer: "उद्योग / खरीदार",
     buyerDesc: "जिम्मेदारी से कार्बन फुटप्रिंट ऑफसेट करें",
+    admin: "व्यवस्थापक",
+    adminDesc: "प्लेटफॉर्म संचालन और अनुपालन प्रबंधित करें",
     
     // Registration
     registerTitle: "खाता बनाएं",
@@ -174,6 +221,7 @@ export const TRANSLATIONS = {
     district: "जिला",
     industryType: "उद्योग प्रकार",
     submit: "शुरू करें",
+    adminCode: "व्यवस्थापक एक्सेस कोड",
     
     // Navigation
     dashboard: "डैशबोर्ड",
@@ -185,6 +233,13 @@ export const TRANSLATIONS = {
     support: "सहायता",
     settings: "सेटिंग्स",
     logout: "लॉग आउट",
+    
+    // Admin Navigation
+    overview: "अवलोकन",
+    userManagement: "उपयोगकर्ता प्रबंधन",
+    creditVerification: "क्रेडिट सत्यापन",
+    complianceReports: "अनुपालन रिपोर्ट",
+    platformSettings: "प्लेटफॉर्म सेटिंग्स",
     
     // Dashboard
     searchPlaceholder: "क्रेडिट, विक्रेता खोजें...",
@@ -282,6 +337,41 @@ export const TRANSLATIONS = {
     allListings: "सभी लिस्टिंग",
     downloadReport: "रिपोर्ट डाउनलोड",
     generateReport: "रिपोर्ट बनाएं",
+    
+    // Admin specific
+    totalUsers: "कुल उपयोगकर्ता",
+    totalSellers: "कुल विक्रेता",
+    totalBuyers: "कुल खरीदार",
+    pendingVerifications: "लंबित सत्यापन",
+    totalVolume: "कुल मात्रा",
+    platformRevenue: "प्लेटफॉर्म राजस्व",
+    verifyCredits: "क्रेडिट सत्यापित करें",
+    rejectCredits: "अस्वीकार",
+    approveCredits: "अनुमोदित",
+    suspendUser: "निलंबित",
+    activateUser: "सक्रिय करें",
+    viewDetails: "विवरण देखें",
+    userStatus: "स्थिति",
+    active: "सक्रिय",
+    suspended: "निलंबित",
+    verified: "सत्यापित",
+    unverified: "असत्यापित",
+    complianceStatus: "अनुपालन स्थिति",
+    generateComplianceReport: "अनुपालन रिपोर्ट बनाएं",
+    exportToCSV: "CSV में निर्यात करें",
+    exportToPDF: "PDF में निर्यात करें",
+    lastLogin: "अंतिम लॉगिन",
+    joinedDate: "शामिल होने की तारीख",
+    creditsTraded: "व्यापार किए गए क्रेडिट",
+    verificationQueue: "सत्यापन कतार",
+    farmDetails: "खेत विवरण",
+    documentVerification: "दस्तावेज़ सत्यापन",
+    carbonCalculation: "कार्बन गणना",
+    allTransactions: "सभी लेन-देन",
+    filterByStatus: "स्थिति से फ़िल्टर",
+    filterByDate: "तारीख से फ़िल्टर",
+    searchUsers: "उपयोगकर्ता खोजें...",
+    noDataFound: "कोई डेटा नहीं मिला",
     
     // States
     punjab: "पंजाब",

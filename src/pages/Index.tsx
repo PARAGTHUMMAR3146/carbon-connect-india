@@ -3,22 +3,28 @@ import { Language } from '@/lib/translations';
 import RoleSelection from '@/components/RoleSelection';
 import RegistrationForm, { UserData } from '@/components/RegistrationForm';
 import Dashboard from '@/components/Dashboard';
+import AdminDashboard from '@/components/AdminDashboard';
 
-type View = 'role-selection' | 'registration' | 'dashboard';
+type View = 'role-selection' | 'registration' | 'dashboard' | 'admin';
 
 const Index = () => {
   const [lang, setLang] = useState<Language>('en');
   const [view, setView] = useState<View>('role-selection');
-  const [role, setRole] = useState<'seller' | 'buyer' | null>(null);
+  const [role, setRole] = useState<'seller' | 'buyer' | 'admin' | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
 
   const toggleLang = () => {
     setLang(prev => prev === 'en' ? 'hi' : 'en');
   };
 
-  const handleRoleSelect = (selectedRole: 'seller' | 'buyer') => {
+  const handleRoleSelect = (selectedRole: 'seller' | 'buyer' | 'admin') => {
     setRole(selectedRole);
-    setView('registration');
+    if (selectedRole === 'admin') {
+      // Admin goes directly to admin dashboard (in production, would have auth)
+      setView('admin');
+    } else {
+      setView('registration');
+    }
   };
 
   const handleRegistrationBack = () => {
@@ -49,7 +55,7 @@ const Index = () => {
   }
 
   // Registration View
-  if (view === 'registration' && role) {
+  if (view === 'registration' && role && role !== 'admin') {
     return (
       <RegistrationForm
         lang={lang}
@@ -60,8 +66,19 @@ const Index = () => {
     );
   }
 
+  // Admin Dashboard View
+  if (view === 'admin') {
+    return (
+      <AdminDashboard
+        lang={lang}
+        onToggleLang={toggleLang}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
   // Dashboard View
-  if (view === 'dashboard' && role && userData) {
+  if (view === 'dashboard' && role && role !== 'admin' && userData) {
     return (
       <Dashboard
         lang={lang}
