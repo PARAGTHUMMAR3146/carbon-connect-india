@@ -4,7 +4,7 @@ import {
   IndianRupee, ArrowUpRight, ArrowDownLeft, CheckCircle, 
   XCircle, Clock, Eye, Download, Filter, RefreshCw,
   UserCheck, UserX, FileBarChart, AlertTriangle, Leaf,
-  Menu, Languages, LogOut, BarChart3, Activity
+  Menu, Languages, LogOut, BarChart3, Activity, LineChart
 } from 'lucide-react';
 import { Language, TRANSLATIONS } from '@/lib/translations';
 import { 
@@ -13,6 +13,7 @@ import {
 } from '@/lib/mockData';
 import PriceTicker from './PriceTicker';
 import PriceChart from './PriceChart';
+import AdminAnalyticsCharts from './AdminAnalyticsCharts';
 import {
   Table,
   TableBody,
@@ -28,7 +29,7 @@ interface AdminDashboardProps {
   onLogout: () => void;
 }
 
-type AdminTab = 'overview' | 'users' | 'verification' | 'transactions' | 'compliance';
+type AdminTab = 'overview' | 'analytics' | 'users' | 'verification' | 'transactions' | 'compliance';
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ lang, onToggleLang, onLogout }) => {
   const t = (key: keyof typeof TRANSLATIONS.en) => TRANSLATIONS[lang][key];
@@ -108,6 +109,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ lang, onToggleLang, onL
 
   const navItems = [
     { id: 'overview' as AdminTab, label: t('overview'), icon: BarChart3 },
+    { id: 'analytics' as AdminTab, label: lang === 'en' ? 'Analytics' : 'विश्लेषण', icon: LineChart },
     { id: 'users' as AdminTab, label: t('userManagement'), icon: Users },
     { id: 'verification' as AdminTab, label: t('creditVerification'), icon: Shield },
     { id: 'transactions' as AdminTab, label: t('transactions'), icon: Activity },
@@ -335,6 +337,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ lang, onToggleLang, onL
                   </div>
                 </div>
               </div>
+            )}
+
+            {/* Analytics Tab */}
+            {activeTab === 'analytics' && (
+              <AdminAnalyticsCharts lang={lang} />
             )}
 
             {/* User Management Tab */}
