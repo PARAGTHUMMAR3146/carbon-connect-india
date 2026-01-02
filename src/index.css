@@ -285,7 +285,8 @@
   }
 
   .credit-badge-gold-standard {
-    @apply bg-gold-100 text-gold-700;
+    background-color: hsl(var(--gold-100));
+    color: hsl(var(--gold-700));
   }
 
   .credit-badge-cdm {
