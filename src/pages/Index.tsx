@@ -1,75 +1,49 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { Language } from '@/lib/translations';
-import RoleSelection from '@/components/RoleSelection';
-import RegistrationForm, { UserData } from '@/components/RegistrationForm';
 import Dashboard from '@/components/Dashboard';
 import AdminDashboard from '@/components/AdminDashboard';
 
-type View = 'role-selection' | 'registration' | 'dashboard' | 'admin';
-
 const Index = () => {
+  const navigate = useNavigate();
+  const { user, role, isLoading, profile, signOut } = useAuth();
   const [lang, setLang] = useState<Language>('en');
-  const [view, setView] = useState<View>('role-selection');
-  const [role, setRole] = useState<'seller' | 'buyer' | 'admin' | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
 
   const toggleLang = () => {
     setLang(prev => prev === 'en' ? 'hi' : 'en');
   };
 
-  const handleRoleSelect = (selectedRole: 'seller' | 'buyer' | 'admin') => {
-    setRole(selectedRole);
-    if (selectedRole === 'admin') {
-      // Admin goes directly to admin dashboard (in production, would have auth)
-      setView('admin');
-    } else {
-      setView('registration');
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate('/auth');
     }
-  };
+  }, [user, isLoading, navigate]);
 
-  const handleRegistrationBack = () => {
-    setView('role-selection');
-    setRole(null);
-  };
-
-  const handleRegistrationSubmit = (data: UserData) => {
-    setUserData(data);
-    setView('dashboard');
-  };
-
-  const handleLogout = () => {
-    setView('role-selection');
-    setRole(null);
-    setUserData(null);
-  };
-
-  // Role Selection View
-  if (view === 'role-selection') {
+  if (isLoading) {
     return (
-      <RoleSelection
-        lang={lang}
-        onToggleLang={toggleLang}
-        onSelectRole={handleRoleSelect}
-      />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
     );
   }
 
-  // Registration View
-  if (view === 'registration' && role && role !== 'admin') {
-    return (
-      <RegistrationForm
-        lang={lang}
-        role={role}
-        onBack={handleRegistrationBack}
-        onSubmit={handleRegistrationSubmit}
-      />
-    );
+  if (!user || !role) {
+    return null;
   }
 
-  // Admin Dashboard View
-  if (view === 'admin') {
+  // Render admin dashboard for admin role
+  if (role === 'admin') {
     return (
-      <AdminDashboard
+      <AdminDashboard 
         lang={lang}
         onToggleLang={toggleLang}
         onLogout={handleLogout}
@@ -77,20 +51,27 @@ const Index = () => {
     );
   }
 
-  // Dashboard View
-  if (view === 'dashboard' && role && role !== 'admin' && userData) {
-    return (
-      <Dashboard
-        lang={lang}
-        role={role}
-        userData={userData}
-        onToggleLang={toggleLang}
-        onLogout={handleLogout}
-      />
-    );
-  }
+  // Render seller/buyer dashboard
+  const userData = {
+    name: profile?.full_name || '',
+    phone: profile?.phone || '',
+    state: profile?.state || '',
+    district: profile?.district || '',
+    companyName: profile?.company_name || '',
+    gst: profile?.gst_number || '',
+    industry: profile?.industry_type || '',
+    coordinates: profile?.coordinates as { lat: number; lng: number } | undefined,
+  };
 
-  return null;
+  return (
+    <Dashboard 
+      lang={lang}
+      role={role as 'seller' | 'buyer'}
+      userData={userData}
+      onToggleLang={toggleLang}
+      onLogout={handleLogout}
+    />
+  );
 };
 
 export default Index;
