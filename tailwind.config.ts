@@ -72,7 +72,6 @@ export default {
           100: "hsl(var(--gold-100))",
           500: "hsl(var(--gold-500))",
           600: "hsl(var(--gold-600))",
-          700: "hsl(var(--gold-700))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

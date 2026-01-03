@@ -61,7 +61,6 @@
     --gold-100: 38 92% 85%;
     --gold-500: 38 92% 50%;
     --gold-600: 38 92% 42%;
-    --gold-700: 38 92% 35%;
 
     /* Gradients */
     --gradient-seller: linear-gradient(135deg, hsl(158 64% 35%) 0%, hsl(168 60% 32%) 100%);
@@ -285,8 +284,7 @@
   }
 
   .credit-badge-gold-standard {
-    background-color: hsl(var(--gold-100));
-    color: hsl(var(--gold-700));
+    @apply bg-gold-100 text-gold-700;
   }
 
   .credit-badge-cdm {
