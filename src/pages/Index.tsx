@@ -1,79 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Language } from '@/lib/translations';
-import RoleSelection from '@/components/RoleSelection';
-import RegistrationForm, { UserData } from '@/components/RegistrationForm';
+import { useAuth } from '@/hooks/useAuth';
 import Dashboard from '@/components/Dashboard';
-
-type View = 'role-selection' | 'registration' | 'dashboard';
+import { Loader2 } from 'lucide-react';
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { user, profile, role, isLoading, signOut } = useAuth();
   const [lang, setLang] = useState<Language>('en');
-  const [view, setView] = useState<View>('role-selection');
-  const [role, setRole] = useState<'seller' | 'buyer' | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
 
   const toggleLang = () => {
     setLang(prev => prev === 'en' ? 'hi' : 'en');
   };
 
-  const handleRoleSelect = (selectedRole: 'seller' | 'buyer') => {
-    setRole(selectedRole);
-    setView('registration');
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate('/auth', { replace: true });
+    }
+  }, [user, isLoading, navigate]);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/auth', { replace: true });
   };
 
-  const handleRegistrationBack = () => {
-    setView('role-selection');
-    setRole(null);
-  };
-
-  const handleRegistrationSubmit = (data: UserData) => {
-    setUserData(data);
-    setView('dashboard');
-  };
-
-  const handleLogout = () => {
-    setView('role-selection');
-    setRole(null);
-    setUserData(null);
-  };
-
-  // Role Selection View
-  if (view === 'role-selection') {
+  // Show loading state
+  if (isLoading) {
     return (
-      <RoleSelection
-        lang={lang}
-        onToggleLang={toggleLang}
-        onSelectRole={handleRoleSelect}
-      />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 size={48} className="animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      </div>
     );
   }
 
-  // Registration View
-  if (view === 'registration' && role) {
-    return (
-      <RegistrationForm
-        lang={lang}
-        role={role}
-        onBack={handleRegistrationBack}
-        onSubmit={handleRegistrationSubmit}
-      />
-    );
+  // Not logged in
+  if (!user || !profile || !role) {
+    return null;
   }
 
-  // Dashboard View
-  if (view === 'dashboard' && role && userData) {
-    return (
-      <Dashboard
-        lang={lang}
-        role={role}
-        userData={userData}
-        onToggleLang={toggleLang}
-        onLogout={handleLogout}
-      />
-    );
-  }
+  // Build userData from profile
+  const userData = {
+    name: profile.full_name || '',
+    phone: profile.phone || '',
+    state: profile.state || 'PB',
+    district: profile.district || '',
+    companyName: profile.company_name || '',
+    gst: profile.gst_number || '',
+    industry: profile.industry_type || 'steel',
+    coordinates: profile.coordinates || { lat: 28.6139, lng: 77.2090 },
+  };
 
-  return null;
+  return (
+    <Dashboard
+      lang={lang}
+      role={role as 'seller' | 'buyer'}
+      userData={userData}
+      onToggleLang={toggleLang}
+      onLogout={handleLogout}
+    />
+  );
 };
 
 export default Index;
