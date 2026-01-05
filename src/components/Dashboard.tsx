@@ -2,14 +2,18 @@ import React, { useState, useMemo } from 'react';
 import { 
   Menu, Search, Wallet, TrendingUp, Leaf, IndianRupee, ArrowUpRight, 
   ArrowDownLeft, ShoppingCart, MapPin, Filter, CheckCircle, Clock, 
-  Zap, FileBarChart
+  Zap, FileBarChart, Plus, AlertCircle
 } from 'lucide-react';
 import { Language, TRANSLATIONS } from '@/lib/translations';
 import { UserData } from './RegistrationForm';
 import { 
-  MOCK_LISTINGS, MOCK_TRANSACTIONS, CREDIT_TYPES, 
-  calculateDistance, INDIAN_STATES, BASE_CARBON_PRICE 
+  CREDIT_TYPES, calculateDistance, INDIAN_STATES, BASE_CARBON_PRICE,
+  MOCK_LISTINGS, MOCK_TRANSACTIONS
 } from '@/lib/mockData';
+import { useWallet } from '@/hooks/useWallet';
+import { useListings } from '@/hooks/useListings';
+import { useTransactions } from '@/hooks/useTransactions';
+import { useAuth } from '@/hooks/useAuth';
 import Sidebar from './Sidebar';
 import PriceTicker from './PriceTicker';
 import PriceChart from './PriceChart';
@@ -18,6 +22,7 @@ import CarbonEstimator from './CarbonEstimator';
 import QuickListModal from './QuickListModal';
 import BuyModal from './BuyModal';
 import ReportsModal from './ReportsModal';
+import { toast } from 'sonner';
 
 interface DashboardProps {
   lang: Language;
@@ -29,6 +34,12 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLang, onLogout }) => {
   const t = (key: keyof typeof TRANSLATIONS.en) => TRANSLATIONS[lang][key];
+  const { user } = useAuth();
+  
+  // Real data hooks
+  const { wallet, addCredits, removeCash, addCash } = useWallet();
+  const { listings: dbListings, myListings, createListing, isLoading: listingsLoading } = useListings();
+  const { transactions: dbTransactions, createTransaction, getTransactionStats } = useTransactions();
   
   // UI State
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -41,27 +52,89 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
   const [showQuickList, setShowQuickList] = useState(false);
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [showReports, setShowReports] = useState(false);
-  const [selectedListing, setSelectedListing] = useState<typeof MOCK_LISTINGS[0] | null>(null);
+  const [selectedListing, setSelectedListing] = useState<any>(null);
   
   // Filter State
   const [filterNearby, setFilterNearby] = useState(false);
   const [filterCreditType, setFilterCreditType] = useState('all');
-  
-  // Wallet State
-  const [sellerWallet, setSellerWallet] = useState({ credits: 0, cash: 0, projected: 0 });
-  const [buyerWallet, setBuyerWallet] = useState({ credits: 120, cash: 500000 });
-  
-  // Data State
-  const [listings, setListings] = useState(MOCK_LISTINGS);
-  const [transactions, setTransactions] = useState(MOCK_TRANSACTIONS);
 
   const isSeller = role === 'seller';
   const displayName = isSeller ? userData.name : userData.companyName;
   const userState = INDIAN_STATES.find(s => s.id === userData.state);
 
+  // Use mock data as fallback for demo, combine with real data
+  const allListings = useMemo(() => {
+    // For buyers, show marketplace listings (from DB or mock)
+    if (!isSeller) {
+      const realListings = dbListings.map(l => ({
+        id: l.id,
+        sellerId: l.seller_id,
+        sellerName: 'Verified Seller',
+        location: { 
+          state: l.location || 'Punjab', 
+          district: '',
+          lat: userState?.lat || 28.6139,
+          lng: userState?.lng || 77.2090
+        },
+        cropType: l.crop_type || 'rice',
+        creditType: l.credit_type,
+        amount: l.amount,
+        pricePerTonne: l.price_per_unit,
+        verified: l.status === 'verified',
+        createdAt: l.created_at,
+        farmSize: 0,
+        practices: [],
+      }));
+      
+      // Combine with mock data for demo purposes
+      return [...realListings, ...MOCK_LISTINGS];
+    }
+    
+    // For sellers, show their own listings
+    return myListings.map(l => ({
+      id: l.id,
+      sellerId: l.seller_id,
+      sellerName: userData.name || 'You',
+      location: { 
+        state: userState?.name || 'Punjab', 
+        district: userData.district,
+        lat: userData.coordinates.lat,
+        lng: userData.coordinates.lng
+      },
+      cropType: l.crop_type || 'mixed',
+      creditType: l.credit_type,
+      amount: l.amount,
+      pricePerTonne: l.price_per_unit,
+      verified: l.status === 'verified',
+      createdAt: l.created_at,
+      farmSize: 0,
+      practices: [],
+      status: l.status,
+    }));
+  }, [dbListings, myListings, isSeller, userData, userState]);
+
+  // Format transactions for display
+  const transactions = useMemo(() => {
+    const realTxns = dbTransactions.map(t => ({
+      id: t.id.substring(0, 8).toUpperCase(),
+      type: t.buyer_id === user?.id ? 'BUY' : 'SELL',
+      creditType: t.credit_type || 'verra',
+      amount: t.amount,
+      pricePerTonne: t.price_per_unit,
+      totalValue: t.total_value,
+      buyerName: 'Buyer',
+      sellerName: 'Seller',
+      status: t.status,
+      createdAt: t.created_at,
+    }));
+    
+    // Include mock for demo
+    return [...realTxns, ...MOCK_TRANSACTIONS];
+  }, [dbTransactions, user]);
+
   // Filter and sort listings
   const filteredListings = useMemo(() => {
-    let filtered = [...listings];
+    let filtered = [...allListings];
     
     // Search filter
     if (searchQuery) {
@@ -69,7 +142,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
       filtered = filtered.filter(l => 
         l.sellerName.toLowerCase().includes(query) ||
         l.location.state.toLowerCase().includes(query) ||
-        l.location.district.toLowerCase().includes(query)
+        l.location.district?.toLowerCase().includes(query)
       );
     }
     
@@ -101,7 +174,11 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
       }
       return l;
     });
-  }, [listings, searchQuery, filterCreditType, filterNearby, userState]);
+  }, [allListings, searchQuery, filterCreditType, filterNearby, userState]);
+
+  // Calculate wallet values
+  const walletCredits = wallet?.credits_balance || 0;
+  const walletCash = wallet?.cash_balance || 0;
 
   // Handlers
   const showNotificationMessage = (msg: string) => {
@@ -109,120 +186,81 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleEstimatorComplete = (credits: number, earnings: number) => {
-    setSellerWallet(prev => ({
-      ...prev,
-      credits: prev.credits + credits,
-      projected: prev.projected + earnings,
-    }));
-    
-    const newListing = {
-      id: `LST${Date.now()}`,
-      sellerId: 'SELF',
-      sellerName: userData.name || 'You',
-      location: { 
-        state: userState?.name || 'Punjab', 
-        district: userData.district,
-        lat: userData.coordinates.lat,
-        lng: userData.coordinates.lng,
-      },
-      cropType: 'rice',
-      creditType: 'verra',
+  const handleEstimatorComplete = async (credits: number, earnings: number) => {
+    // Create listing in database
+    const { error } = await createListing({
+      credit_type: 'verra',
+      crop_type: 'rice',
+      location: userState?.name || 'Punjab',
       amount: credits,
-      pricePerTonne: BASE_CARBON_PRICE,
-      verified: true,
-      createdAt: new Date().toISOString().split('T')[0],
-      farmSize: 10,
-      practices: ['organic'],
-    };
-    
-    setListings(prev => [newListing, ...prev]);
-    setShowEstimator(false);
-    showNotificationMessage(t('listingSuccess'));
+      price_per_unit: BASE_CARBON_PRICE,
+    });
+
+    if (error) {
+      toast.error('Failed to create listing: ' + error);
+    } else {
+      // Update wallet
+      await addCredits(credits);
+      setShowEstimator(false);
+      toast.success(t('listingSuccess'));
+    }
   };
 
-  const handleQuickList = (amount: number, price: number, creditType: string) => {
-    setSellerWallet(prev => ({
-      ...prev,
-      credits: prev.credits + amount,
-      projected: prev.projected + (amount * price),
-    }));
-    
-    const newListing = {
-      id: `LST${Date.now()}`,
-      sellerId: 'SELF',
-      sellerName: userData.name || 'You',
-      location: { 
-        state: userState?.name || 'Punjab', 
-        district: userData.district,
-        lat: userData.coordinates.lat,
-        lng: userData.coordinates.lng,
-      },
-      cropType: 'mixed',
-      creditType,
+  const handleQuickList = async (amount: number, price: number, creditType: string) => {
+    const { error } = await createListing({
+      credit_type: creditType,
+      location: userState?.name || 'Punjab',
       amount,
-      pricePerTonne: price,
-      verified: true,
-      createdAt: new Date().toISOString().split('T')[0],
-      farmSize: 0,
-      practices: [],
-    };
-    
-    setListings(prev => [newListing, ...prev]);
-    setShowQuickList(false);
-    showNotificationMessage(t('listingSuccess'));
+      price_per_unit: price,
+    });
+
+    if (error) {
+      toast.error('Failed to create listing: ' + error);
+    } else {
+      await addCredits(amount);
+      setShowQuickList(false);
+      toast.success(t('listingSuccess'));
+    }
   };
 
-  const handleBuy = (amount: number) => {
+  const handleBuy = async (amount: number) => {
     if (!selectedListing) return;
     
     const totalCost = amount * selectedListing.pricePerTonne;
     
-    if (buyerWallet.cash < totalCost) {
-      showNotificationMessage(t('insufficientFunds'));
+    if (walletCash < totalCost) {
+      toast.error(t('insufficientFunds'));
       return;
     }
     
-    setBuyerWallet(prev => ({
-      credits: prev.credits + amount,
-      cash: prev.cash - totalCost,
-    }));
-    
-    // Update or remove listing
-    if (amount >= selectedListing.amount) {
-      setListings(prev => prev.filter(l => l.id !== selectedListing.id));
-    } else {
-      setListings(prev => prev.map(l => 
-        l.id === selectedListing.id 
-          ? { ...l, amount: l.amount - amount }
-          : l
-      ));
-    }
-    
-    // Add transaction
-    const newTransaction = {
-      id: `TXN${Date.now()}`,
-      type: 'BUY',
-      creditType: selectedListing.creditType,
+    // Create transaction
+    const { error } = await createTransaction({
+      credit_id: selectedListing.id,
+      seller_id: selectedListing.sellerId,
       amount,
-      pricePerTonne: selectedListing.pricePerTonne,
-      totalValue: totalCost,
-      buyerName: userData.companyName,
-      sellerName: selectedListing.sellerName,
-      status: 'completed',
-      createdAt: new Date().toISOString(),
-    };
-    
-    setTransactions(prev => [newTransaction, ...prev]);
-    setShowBuyModal(false);
-    setSelectedListing(null);
-    showNotificationMessage(t('purchaseSuccess'));
+      price_per_unit: selectedListing.pricePerTonne,
+      total_value: totalCost,
+    });
+
+    if (error) {
+      toast.error('Transaction failed: ' + error);
+    } else {
+      // Update buyer wallet
+      await removeCash(totalCost);
+      await addCredits(amount);
+      
+      setShowBuyModal(false);
+      setSelectedListing(null);
+      toast.success(t('purchaseSuccess'));
+    }
   };
 
-  const openBuyModal = (listing: typeof MOCK_LISTINGS[0]) => {
+  const openBuyModal = (listing: any) => {
     setSelectedListing(listing);
     setShowBuyModal(true);
   };
+
+  const stats = getTransactionStats();
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -276,7 +314,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
               isSeller ? 'bg-emerald-100 text-primary' : 'bg-navy-100 text-secondary'
             }`}>
-              {displayName.charAt(0)}
+              {displayName?.charAt(0) || 'U'}
             </div>
           </div>
         </header>
@@ -303,7 +341,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                       <div>
                         <p className="text-sm opacity-80 mb-1">{t('totalCredits')}</p>
                         <p className="text-3xl lg:text-4xl font-extrabold">
-                          {isSeller ? sellerWallet.credits.toFixed(2) : buyerWallet.credits.toFixed(2)}
+                          {walletCredits.toFixed(2)}
                           <span className="text-lg font-normal opacity-70 ml-2">{t('tonnes')}</span>
                         </p>
                       </div>
@@ -313,10 +351,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                         </p>
                         <p className="text-3xl lg:text-4xl font-extrabold flex items-center">
                           <IndianRupee size={28} />
-                          {isSeller 
-                            ? sellerWallet.projected.toLocaleString('en-IN')
-                            : buyerWallet.cash.toLocaleString('en-IN')
-                          }
+                          {walletCash.toLocaleString('en-IN')}
                         </p>
                       </div>
                     </div>
@@ -361,7 +396,9 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                         <TrendingUp size={18} />
                       </div>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{listings.length}</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {isSeller ? myListings.length : allListings.length}
+                    </p>
                   </div>
                   
                   <div className="stat-card">
@@ -371,7 +408,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                         <ArrowUpRight size={18} />
                       </div>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{transactions.length}</p>
+                    <p className="text-2xl font-bold text-foreground">{stats.total}</p>
                   </div>
                   
                   <div className="stat-card">
@@ -381,9 +418,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                         <CheckCircle size={18} />
                       </div>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">
-                      {transactions.filter(t => t.status === 'completed').length}
-                    </p>
+                    <p className="text-2xl font-bold text-foreground">{stats.completed}</p>
                   </div>
                   
                   <div className="stat-card">
@@ -393,9 +428,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                         <Clock size={18} />
                       </div>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">
-                      {transactions.filter(t => t.status !== 'completed').length}
-                    </p>
+                    <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
                   </div>
                 </div>
 
@@ -427,7 +460,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                           <div>
                             <p className="font-semibold text-foreground">{txn.id}</p>
                             <p className="text-sm text-muted-foreground">
-                              {txn.amount} {t('tonnes')} • {CREDIT_TYPES.find(c => c.id === txn.creditType)?.name}
+                              {txn.amount} {t('tonnes')} • {CREDIT_TYPES.find(c => c.id === txn.creditType)?.name || txn.creditType}
                             </p>
                           </div>
                         </div>
@@ -492,7 +525,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                         onClick={() => setShowQuickList(true)}
                         className="btn-seller py-2 flex items-center gap-2"
                       >
-                        <Zap size={16} />
+                        <Plus size={16} />
                         {t('directList')}
                       </button>
                     )}
@@ -541,7 +574,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                       <span className="font-semibold">{t('creditBalance')}</span>
                     </div>
                     <p className="text-4xl font-extrabold">
-                      {isSeller ? sellerWallet.credits.toFixed(2) : buyerWallet.credits.toFixed(2)}
+                      {walletCredits.toFixed(2)}
                       <span className="text-lg font-normal opacity-70 ml-2">{t('tonnes')}</span>
                     </p>
                   </div>
@@ -553,11 +586,48 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                     </div>
                     <p className="text-4xl font-extrabold text-foreground flex items-center">
                       <IndianRupee size={32} />
-                      {isSeller 
-                        ? sellerWallet.cash.toLocaleString('en-IN')
-                        : buyerWallet.cash.toLocaleString('en-IN')
-                      }
+                      {walletCash.toLocaleString('en-IN')}
                     </p>
+                  </div>
+                </div>
+
+                {/* Portfolio Summary */}
+                <div className="bg-card rounded-2xl border border-border p-6">
+                  <h3 className="font-bold text-foreground mb-4">
+                    {lang === 'en' ? 'Portfolio Summary' : 'पोर्टफोलियो सारांश'}
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-muted rounded-xl p-4">
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {lang === 'en' ? 'Total Trades' : 'कुल व्यापार'}
+                      </p>
+                      <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+                    </div>
+                    <div className="bg-muted rounded-xl p-4">
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {lang === 'en' ? 'Volume Traded' : 'व्यापार मात्रा'}
+                      </p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {stats.totalCredits.toFixed(2)} <span className="text-sm font-normal">{t('tonnes')}</span>
+                      </p>
+                    </div>
+                    <div className="bg-muted rounded-xl p-4">
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {lang === 'en' ? 'Total Value' : 'कुल मूल्य'}
+                      </p>
+                      <p className="text-2xl font-bold text-foreground flex items-center">
+                        <IndianRupee size={18} />
+                        {stats.totalVolume.toLocaleString('en-IN')}
+                      </p>
+                    </div>
+                    <div className="bg-muted rounded-xl p-4">
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {lang === 'en' ? 'Success Rate' : 'सफलता दर'}
+                      </p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -609,7 +679,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, role, userData, onToggleLan
                               </span>
                             </td>
                             <td className="p-4 text-muted-foreground">
-                              {CREDIT_TYPES.find(c => c.id === txn.creditType)?.name}
+                              {CREDIT_TYPES.find(c => c.id === txn.creditType)?.name || txn.creditType}
                             </td>
                             <td className="p-4 text-right font-medium text-foreground">
                               {txn.amount} {t('tonnes')}
