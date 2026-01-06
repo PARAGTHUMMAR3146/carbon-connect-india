@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Language } from '@/lib/translations';
 import { useAuth } from '@/hooks/useAuth';
 import Dashboard from '@/components/Dashboard';
+import AdminDashboard from '@/components/AdminDashboard';
 import { Loader2 } from 'lucide-react';
 
 const Index = () => {
@@ -43,7 +44,17 @@ const Index = () => {
     return null;
   }
 
-  // Build userData from profile
+  // Show admin dashboard for admins
+  if (role === 'admin') {
+    return (
+      <AdminDashboard
+        lang={lang}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  // Build userData from profile for seller/buyer
   const userData = {
     name: profile.full_name || '',
     phone: profile.phone || '',
