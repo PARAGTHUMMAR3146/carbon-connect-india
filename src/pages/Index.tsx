@@ -40,8 +40,36 @@ const Index = () => {
   }
 
   // Not logged in
-  if (!user || !profile || !role) {
+  if (!user) {
     return null;
+  }
+
+  // Missing profile or role - show a helpful message
+  if (!profile || !role) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="bg-card rounded-3xl shadow-xl p-8 max-w-md text-center border border-border">
+          <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+            <Loader2 size={32} className="text-amber-600" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground mb-2">
+            {lang === 'en' ? 'Profile Setup Incomplete' : 'प्रोफ़ाइल सेटअप अधूरा'}
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            {lang === 'en' 
+              ? 'Your account is missing some information. Please sign out and register again.'
+              : 'आपके खाते में कुछ जानकारी गायब है। कृपया साइन आउट करें और फिर से पंजीकरण करें।'
+            }
+          </p>
+          <button
+            onClick={handleLogout}
+            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity"
+          >
+            {lang === 'en' ? 'Sign Out & Register Again' : 'साइन आउट करें और फिर से पंजीकरण करें'}
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Show admin dashboard for admins
